@@ -16,6 +16,7 @@ module Beanstalk
       @watch_list = [@default_tube] if @default_tube
       @tubes = {}
       @id_mutex = Mutex.new
+      @tube_mutex = Mutex.new
       @id = 1
     end
 
@@ -30,6 +31,14 @@ module Beanstalk
       @mutex_id.synchronize { @id += 1 }
 
       return @id
+    end
+
+    def on_tube(tube, &block)
+      @tube_mutex.lock
+      use tube
+      yield self
+    ensure
+      @tube_mutex.unlock
     end
 
     # TODO Put on to reservation queue and deal with bury etc
