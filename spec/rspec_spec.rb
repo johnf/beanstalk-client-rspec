@@ -1,7 +1,5 @@
 require 'spec_helper'
 
-require 'beanstalk_spec'
-
 describe 'RSpec' do
   before do
     @beanstalk = Beanstalk::MockPool.new ['localhost:11300']

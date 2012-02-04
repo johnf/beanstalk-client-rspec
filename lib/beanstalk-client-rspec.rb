@@ -60,7 +60,7 @@ module Beanstalk
       job = nil
       @watch_list.each do |tube|
         begin
-          job = tube.pop(false)
+          job = @tubes[tube].pop(false)
         rescue ThreadError
           next
         end
