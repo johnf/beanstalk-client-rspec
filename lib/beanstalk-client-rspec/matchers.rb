@@ -1,0 +1,48 @@
+require 'rspec/expectations'
+
+
+module TubeHelper
+  def self.extended(klass)
+    klass.instance_eval do
+      chain :for do |tube_name|
+        self.tube_name = tube_name
+      end
+    end
+  end
+
+  private
+
+  attr_accessor :tube_name
+
+  def tubes(beanstalk)
+    beanstalk.instance_variable_get(:@tubes)
+  end
+
+  def tube_name
+    @tube_name || 'default'
+  end
+
+  def tube_size(beanstalk)
+    (tubes(beanstalk)[tube_name] || []).size
+  end
+end
+
+RSpec::Matchers.define :have_tube_size_of do |size|
+  extend TubeHelper
+  match do |actual|
+    tube_size(actual) == size
+  end
+
+  failure_message_for_should do |actual|
+    "expected that tube #{actual} would have #{size} jobs, but got #{queue(actual).size} jobs instead"
+  end
+
+  failure_message_for_should_not do |actual|
+    "expected that tube #{actual} would not have #{size} jobs, but got #{queue(actual).size} jobs instead"
+  end
+
+  description do
+    "have #{size} jobs in tube"
+  end
+end
+

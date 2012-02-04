@@ -14,4 +14,7 @@ Gem::Specification.new do |gem|
   gem.name          = "beanstalk-client-rspec"
   gem.require_paths = ["lib"]
   gem.version       = Beanstalk::Client::Rspec::VERSION
+
+  gem.add_dependency('rspec')
+  gem.add_dependency('beanstalk-client')
 end

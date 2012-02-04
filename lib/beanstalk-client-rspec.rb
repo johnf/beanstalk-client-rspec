@@ -1,4 +1,5 @@
 require "beanstalk-client-rspec/version"
+require 'beanstalk-client'
 
 module Beanstalk
   class MockPool < Pool
