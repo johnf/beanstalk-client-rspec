@@ -34,11 +34,11 @@ RSpec::Matchers.define :have_tube_size_of do |size|
   end
 
   failure_message_for_should do |actual|
-    "expected that tube #{actual} would have #{size} jobs, but got #{queue(actual).size} jobs instead"
+    "expected that tube #{actual} would have #{size} jobs, but got #{tube_size(actual)} jobs instead"
   end
 
   failure_message_for_should_not do |actual|
-    "expected that tube #{actual} would not have #{size} jobs, but got #{queue(actual).size} jobs instead"
+    "expected that tube #{actual} would not have #{size} jobs, but got #{tube_size(actual)} jobs instead"
   end
 
   description do
