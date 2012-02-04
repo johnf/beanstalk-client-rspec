@@ -20,9 +20,29 @@ Or install it yourself as:
 
 TODO: Write usage instructions here
 
+## Caveats
+
+* No timeout logic is implemented. i.e. jobs stay reserved forever
+
 ## TODO
 
-* Write tests
+* Write more tests
+* Implement job delay
+* Implement job priority
+* Implement
+  - bury
+  - touch
+  - peek
+  - peek-ready
+  - peek-delayed
+  - peek-buried
+  - kick
+  - stats-tube
+  - stats
+  - list-tubes
+  - list-tubes-used
+  - quit
+  - pause-tube 
 
 ## Contributing
 

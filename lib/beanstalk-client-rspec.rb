@@ -3,67 +3,36 @@ require "beanstalk-client-rspec/spec"
 require 'beanstalk-client'
 
 module Beanstalk
-  class MockPool < Pool
-    def connect
-    end
-
+  class MockConnection < Beanstalk::Connection
     def initialize(addr, default_tube=nil)
       super
       @id_mutex = Mutex.new
       @tube_mutex = Mutex.new
-      flush!
-    end
-
-    def interact(cmd, rfmt)
-    end
-
-    # Tests use this to rest stuff
-    def flush!
-      @last_used = 'default'
-      @watch_list = ['default']
-      @watch_list = [@default_tube] if @default_tube
       @tubes = {}
       @id = 0
     end
 
-    def use(tube)
-      @last_used = tube
+    # Tests use this to rest stuff
+    def flush!
+      initialize(nil, @default_tube)
     end
 
-    def put(body, pri=65536, delay=0, ttr=120)
-      id = @id_mutex.synchronize { @id += 1 }
-      (@tubes[@last_used] ||= Queue.new) << {
-        :id    => id,
-        :pri   => pri,
-        :delay => delay,
-        :ttr   => ttr,
-        :body  => body.to_s
-      }
-
-      return id
-    end
-
-    def yput(obj, pri=65536, delay=0, ttr=120)
-      put(YAML.dump(obj), pri, delay, ttr)
-    end
-
-    def on_tube(tube, &block)
-      @tube_mutex.lock
-      use tube
-      yield self
-    ensure
-      @tube_mutex.unlock
+    def connect
+      # We don't want to actually connect to anything
     end
 
     # TODO Put on to reservation queue and deal with bury etc
     def reserve(timeout=nil)
       job = nil
-      @watch_list.each do |tube|
+      @watch_list.each do |tube_name|
         begin
-          job = @tubes[tube].pop(false)
+          job = @tubes[tube_name]['ready'].pop(false)
         rescue ThreadError
           next
         end
+
+        job['reserves'] += 1
+        (@tubes[tube_name]['reserved'] ||= []).push job
       end
 
       if job.nil?
@@ -74,17 +43,93 @@ module Beanstalk
         end
       end
 
-      Job.new(self, job[:id], job[:body])
+      Job.new(self, job['id'], job['body'])
     end
 
+    private
+    def interact(cmd, rfmt)
+      case cmd
+      when /^watch/
+        [@watch_list.size]
+      when /^ignore/
+        [@watch_list.size]
+      when /^use (\S+)/
+        [$1]
+      when /^list-tubes-watched/
+        @watch_list
+      when /^put (\d+) (\d+) (\d+) \d+\r\n(.*)\r\n/
+        pri = $1
+        delay = $2
+        ttr = $3
+        body = $4
+
+        id = @id_mutex.synchronize { @id += 1 }
+        job = {
+          'id'         => id,
+          'pri'        => pri,
+          'delay'      => delay,
+          'ttr'        => ttr,
+          'body'       => body.to_s,
+          'created_at' => Time.now,
+          'file'       => 0,
+          'reserves'   => 0,
+          'timeouts'   => 0,
+          'releases'   => 0,
+          'buries'     => 0,
+          'kicks'      => 0,
+          }
+        @tubes[@last_used] ||= {}
+        (@tubes[@last_used]['ready'] ||= Queue.new) << job
+        [id]
+      when /^delete (\d+)/
+        id = $1
+        @tubes.each_pair do |tube_name, states|
+          states['reserved'].delete_if {|job| job[:id] == id }
+        end
+      when /^stats-job (\d+)/
+        id = $1
+        @tubes.each_pair do |tube_name, states|
+          job = states['reserved'].find {|job| job[:id] == id }
+          if job
+            return job.merge(
+              'state'     => 'reserved',
+              'age'       => (Time.now - job[:created_at]),
+              'file'      => 0,
+              'time-left' => 1,
+            )
+          end
+        end
+      when /^release (\d+) (\d+) (\d+)/
+        id = $1
+        @tubes.each_pair do |tube_name, states|
+          job = states['reserved'].delete_if {|job| job[:id] == id }.first
+          if job
+            job['releases'] += 1
+            (@tubes[tube_name]['ready'] ||= Queue.new) << job
+          end
+        end
+      else
+        raise "Need to define #{cmd} #{rfmt} for interact"
+      end
+    end
+  end
+
+  class MockPool < Pool
+    def connect
+      @connections ||= {}
+      @addrs.each do |addr|
+        if !@connections.include?(addr)
+          @connections[addr] = MockConnection.new(addr, @default_tube)
+          prev_watched = @connections[addr].list_tubes_watched()
+          to_ignore = prev_watched - @watch_list
+          @watch_list.each{|tube| @connections[addr].watch(tube)}
+          to_ignore.each{|tube| @connections[addr].ignore(tube)}
+        end
+      end
+      @connections.size
+    end
   end
 end
-
-    #def initialize(addr, default_tube=nil)
-    #  @default_tube = default_tube
-    #  flush!
-    #end
-
 
 #def job_stats(id)
 #      job = nil
