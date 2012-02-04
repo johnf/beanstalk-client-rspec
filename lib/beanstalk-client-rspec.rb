@@ -41,6 +41,10 @@ module Beanstalk
       return @id
     end
 
+    def yput(obj, pri=65536, delay=0, ttr=120)
+      put(YAML.dump(obj), pri, delay, ttr)
+    end
+
     def on_tube(tube, &block)
       @tube_mutex.lock
       use tube
