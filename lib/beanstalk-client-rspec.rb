@@ -21,7 +21,7 @@ module Beanstalk
       @watch_list = ['default']
       @watch_list = [@default_tube] if @default_tube
       @tubes = {}
-      @id = 1
+      @id = 0
     end
 
     def use(tube)
@@ -29,16 +29,16 @@ module Beanstalk
     end
 
     def put(body, pri=65536, delay=0, ttr=120)
+      id = @id_mutex.synchronize { @id += 1 }
       (@tubes[@last_used] ||= Queue.new) << {
-        :id    => @id,
+        :id    => id,
         :pri   => pri,
         :delay => delay,
         :ttr   => ttr,
         :body  => body.to_s
       }
-      @id_mutex.synchronize { @id += 1 }
 
-      return @id
+      return id
     end
 
     def yput(obj, pri=65536, delay=0, ttr=120)
