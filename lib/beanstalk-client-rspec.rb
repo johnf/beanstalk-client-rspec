@@ -5,6 +5,13 @@ module Beanstalk
     def connect
     end
 
+    def initialize(addr, default_tube=nil)
+      super
+      @id_mutex = Mutex.new
+      @tube_mutex = Mutex.new
+      flush!
+    end
+
     def interact(cmd, rfmt)
     end
 
@@ -15,8 +22,6 @@ module Beanstalk
       @default_tube = default_tube
       @watch_list = [@default_tube] if @default_tube
       @tubes = {}
-      @id_mutex = Mutex.new
-      @tube_mutex = Mutex.new
       @id = 1
     end
 
