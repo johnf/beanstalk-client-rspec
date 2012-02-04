@@ -5,7 +5,7 @@ Gem::Specification.new do |gem|
   gem.authors       = ["John Ferlito"]
   gem.email         = ["johnf@inodes.org"]
   gem.description   = %q{Rspec functionality for beanstalk-client}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.summary       = %q{Rspec functionality for beanstalk-client}
   gem.homepage      = "https://github.com/johnf/beanstalk-client-rspec"
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
