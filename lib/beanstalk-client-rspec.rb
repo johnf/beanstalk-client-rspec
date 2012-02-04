@@ -36,7 +36,7 @@ module Beanstalk
         :ttr   => ttr,
         :body  => body.to_s
       }
-      @mutex_id.synchronize { @id += 1 }
+      @id_mutex.synchronize { @id += 1 }
 
       return @id
     end
