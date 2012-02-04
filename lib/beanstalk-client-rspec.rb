@@ -19,7 +19,6 @@ module Beanstalk
     def flush!
       @last_used = 'default'
       @watch_list = ['default']
-      @default_tube = default_tube
       @watch_list = [@default_tube] if @default_tube
       @tubes = {}
       @id = 1
