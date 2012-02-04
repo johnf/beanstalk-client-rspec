@@ -15,7 +15,7 @@ module TubeHelper
   attr_accessor :tube_name
 
   def tubes(beanstalk)
-    beanstalk.instance_variable_get(:@tubes)
+    beanstalk.instance_variable_get(:@connections)['default'].instance_variable_get(:@tubes)
   end
 
   def tube_name
@@ -23,7 +23,8 @@ module TubeHelper
   end
 
   def tube_size(beanstalk)
-    (tubes(beanstalk)[tube_name] || []).size
+    states = tubes(beanstalk)[tube_name] || {}
+    (states['ready'] || []).size
   end
 end
 

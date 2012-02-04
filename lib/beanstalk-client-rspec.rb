@@ -57,7 +57,7 @@ module Beanstalk
         [$1]
       when /^list-tubes-watched/
         @watch_list
-      when /^put (\d+) (\d+) (\d+) \d+\r\n(.*)\r\n/
+      when /^put (\d+) (\d+) (\d+) \d+\r\n(.*)\r\n/m
         pri = $1
         delay = $2
         ttr = $3
@@ -117,53 +117,10 @@ module Beanstalk
   class MockPool < Pool
     def connect
       @connections ||= {}
-      @addrs.each do |addr|
-        if !@connections.include?(addr)
-          @connections[addr] = MockConnection.new(addr, @default_tube)
-          prev_watched = @connections[addr].list_tubes_watched()
-          to_ignore = prev_watched - @watch_list
-          @watch_list.each{|tube| @connections[addr].watch(tube)}
-          to_ignore.each{|tube| @connections[addr].ignore(tube)}
-        end
+      if !@connections.include?('default')
+        @connections['default'] = MockConnection.new('default', @default_tube)
       end
       @connections.size
     end
   end
 end
-
-#def job_stats(id)
-#      job = nil
-#      @watch_list.each do |tube|
-#        job = @tubes[tube].find {|j| j[:id] == id}
-#        break if job
-#      end
-#      job
-#    end
-
-#    def delete(id)
-#      @watch_list.each do |tube|
-#        next if @tubes[tube].nil? || @tubes[tube].empty?
-#        @tubes[tube] = @tubes[tube].reject {|j| j[:id] == id}
-#      end
-#      :ok
-#    end
-#
-#    def bury(id, pri)
-#      @watch_list.each do |tube|
-#        @tubes[tube] = @tubes[tube].reject {|j| j[:id] == id}
-#      end
-#      :ok
-#    end
-
-#
-    # Stuff for testing the mock
-    #
-#    def tube_size(tube=nil)
-#      return 0 if ! @tubes[tube || @last_used]
-#      @tubes[tube || @last_used].size
-#    end
-#
-#    def current_tube
-#      @last_tube
-#    end
-
