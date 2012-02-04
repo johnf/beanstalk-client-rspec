@@ -24,6 +24,10 @@ module Beanstalk
       @id = 1
     end
 
+    def use(tube)
+      @last_used = tube
+    end
+
     def put(body, pri=65536, delay=0, ttr=120)
       (@tubes[@last_used] ||= Queue.new) << {
         :id    => @id,
