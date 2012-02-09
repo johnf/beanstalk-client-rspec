@@ -122,5 +122,11 @@ module Beanstalk
       end
       @connections.size
     end
+
+    def flush!
+      @connections.each do |c|
+        c.flush!
+      end
+    end
   end
 end
