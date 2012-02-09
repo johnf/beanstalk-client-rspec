@@ -4,8 +4,9 @@ require File.expand_path('../lib/beanstalk-client-rspec/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["John Ferlito"]
   gem.email         = ["johnf@inodes.org"]
-  gem.description   = %q{Mock and RSpec for beanstalk-client}
-  gem.summary       = %q{Provides a fairly complete mock for beanstalk-client by imitating beanstalkd using arrays. Also provides some rspec matchers for testing the state of the system.}
+  gem.summary       = %q{Mock and RSpec for beanstalk-client}
+  gem.description   = %q{Provides a fairly complete mock for beanstalk-client by imitating beanstalkd using arrays. Also provides some rspec matchers for testing the state of the system.}
+  gem.license       = 'MIT'
   gem.homepage      = "https://github.com/johnf/beanstalk-client-rspec"
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
