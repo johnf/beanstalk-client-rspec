@@ -13,7 +13,7 @@ module Beanstalk
     end
 
     # Tests use this to rest stuff
-    def flush!
+    def reset!
       initialize(nil, @default_tube)
     end
 
@@ -123,9 +123,9 @@ module Beanstalk
       @connections.size
     end
 
-    def flush!
-      @connections.each do |c|
-        c.flush!
+    def reset!
+      @connections.values.each do |c|
+        c.reset!
       end
     end
   end

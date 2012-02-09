@@ -40,4 +40,23 @@ describe Beanstalk::MockPool do
     job = @beanstalk.reserve
     job.body.should == 'cow'
   end
+
+  describe 'reset!' do
+
+    it 'should empty tubes' do
+      @beanstalk.put 'cow'
+      @beanstalk.should have_tube_size_of(1).for('default')
+      @beanstalk.reset!
+      @beanstalk.should have_tube_size_of(0).for('default')
+    end
+
+    it 'should not be watching anything' do
+      @beanstalk.list_tubes_watched.values.flatten.should == ['default']
+      @beanstalk.watch 'foo'
+      @beanstalk.list_tubes_watched.values.flatten.should == ['default', 'foo']
+      @beanstalk.reset!
+      @beanstalk.list_tubes_watched.values.flatten.should == ['default']
+    end
+  end
+
 end

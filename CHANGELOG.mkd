@@ -4,6 +4,8 @@ Bugfixes
 --------
 
 * Remove Gemfile.lock from repository
+* Rename flush! to reset!, since it rests all the state
+* Add tests for reset!
 
 # 0.0.2 (2012-02-09)
 
