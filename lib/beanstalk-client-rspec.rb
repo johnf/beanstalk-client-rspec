@@ -26,6 +26,9 @@ module Beanstalk
       job = nil
       @watch_list.each do |tube_name|
         begin
+          if @tubes[tube_name].nil?
+            next
+          end
           job = @tubes[tube_name]['ready'].pop(false)
         rescue ThreadError
           next
@@ -49,7 +52,7 @@ module Beanstalk
     private
     def interact(cmd, rfmt)
       case cmd
-      when /^watch/
+      when /^watch (\S+)/
         [@watch_list.size]
       when /^ignore/
         [@watch_list.size]

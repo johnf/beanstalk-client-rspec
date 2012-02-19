@@ -1,3 +1,10 @@
+# 0.0.4 (2012-02-19)
+
+Bugfixes
+--------
+
+* Reserve on empty queue was raising an exception instead of TimedOut
+
 # 0.0.3 (2012-02-09)
 
 Bugfixes

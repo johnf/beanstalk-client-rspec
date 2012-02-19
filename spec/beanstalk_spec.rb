@@ -59,4 +59,12 @@ describe Beanstalk::MockPool do
     end
   end
 
+  describe 'beanstalk workflow' do
+    it 'can reserve an empty tube' do
+      expect {
+        @beanstalk.reserve
+      }.to raise_error Beanstalk::TimedOut
+    end
+  end
+
 end
