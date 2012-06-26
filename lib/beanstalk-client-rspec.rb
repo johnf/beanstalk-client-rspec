@@ -29,7 +29,7 @@ module Beanstalk
           if @tubes[tube_name].nil?
             next
           end
-          job = @tubes[tube_name]['ready'].pop(false)
+          job = @tubes[tube_name]['ready'].pop(true)
         rescue ThreadError
           next
         end
@@ -40,9 +40,9 @@ module Beanstalk
 
       if job.nil?
         if timeout
-          return nil
+          raise Beanstalk::TimedOut
         else
-          raise Beanstalk::TimedOut if job.nil?
+          return nil
         end
       end
 
