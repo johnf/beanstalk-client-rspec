@@ -1,3 +1,10 @@
+# 0.0.5 (2012-06-26)
+
+Bugfixes
+--------
+
+* Fix the timeout logic. It was reversed.
+
 # 0.0.4 (2012-02-19)
 
 Bugfixes
