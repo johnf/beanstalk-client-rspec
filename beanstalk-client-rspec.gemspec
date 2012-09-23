@@ -18,4 +18,6 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency('rspec')
   gem.add_dependency('beanstalk-client')
+
+  gem.add_development_dependency('rake')
 end

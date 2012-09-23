@@ -14,4 +14,12 @@ describe 'RSpec' do
     @beanstalk.yput :foo => 'bar'
     @beanstalk.should have_tube_size_of(1).for('oath')
   end
+
+  it 'should match gt queue size' do
+    @beanstalk.use 'oath'
+    @beanstalk.yput :foo => 'bar'
+    @beanstalk.yput :foo => 'bar'
+    @beanstalk.yput :foo => 'bar'
+    @beanstalk.should have_tube_size_of_gt(2).for('oath')
+  end
 end

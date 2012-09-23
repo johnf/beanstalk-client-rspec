@@ -1,3 +1,10 @@
+# 0.0.6 (2012-09-23)
+
+Features
+--------
+
+* Add have\_tube\_size\_of\_gt
+
 # 0.0.5 (2012-06-26)
 
 Bugfixes
