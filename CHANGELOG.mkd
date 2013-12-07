@@ -1,3 +1,10 @@
+# 0.0.9 (2013-12-07)
+
+Bugfixes
+--------
+
+* Don't bomb out on tubes with no reserved jobs on delete
+
 # 0.0.8 (2013-12-07)
 
 Feature

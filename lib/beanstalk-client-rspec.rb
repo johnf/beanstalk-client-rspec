@@ -110,7 +110,7 @@ module Beanstalk
       when /^delete (\d+)/
         id = $1
         @tubes.each_pair do |tube_name, states|
-          states['reserved'].delete_if {|job| job[:id] == id }
+          states['reserved'].delete_if {|job| job[:id] == id } if states['reserved']
         end
       when /^stats-job (\d+)/
         id = $1
