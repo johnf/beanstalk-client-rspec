@@ -6,15 +6,25 @@ module Beanstalk
   class MockConnection < Beanstalk::Connection
     def initialize(addr, default_tube=nil)
       super
-      @id_mutex = Mutex.new
-      @tube_mutex = Mutex.new
-      @tubes = {}
-      @id = 0
+      @default_tube = default_tube
+      reset!
     end
 
     # Tests use this to rest stuff
     def reset!
-      initialize(nil, @default_tube)
+      @id_mutex = Mutex.new
+      @tube_mutex = Mutex.new
+      @tubes = {}
+      @id = 0
+
+      # Super reset
+      @mutex = Mutex.new
+      @tube_mutex = Mutex.new
+      @waiting = false
+      @last_used = 'default'
+      @watch_list = [@last_used]
+      self.use(@default_tube) if @default_tube
+      self.watch(@default_tube) if @default_tube
     end
 
     def connect
