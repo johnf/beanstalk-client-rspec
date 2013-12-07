@@ -27,6 +27,19 @@ module Beanstalk
       self.watch(@default_tube) if @default_tube
     end
 
+    # Tests use this to rest stuff
+    def clear!
+      @id_mutex = Mutex.new
+      @tube_mutex = Mutex.new
+      @tubes = {}
+      @id = 0
+
+      # Super reset
+      @mutex = Mutex.new
+      @tube_mutex = Mutex.new
+      @waiting = false
+    end
+
     def connect
       # We don't want to actually connect to anything
     end
@@ -139,6 +152,12 @@ module Beanstalk
     def reset!
       @connections.values.each do |c|
         c.reset!
+      end
+    end
+
+    def clear!
+      @connections.values.each do |c|
+        c.clear!
       end
     end
   end

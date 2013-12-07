@@ -59,6 +59,24 @@ describe Beanstalk::MockPool do
     end
   end
 
+  describe 'clear!' do
+
+    it 'should empty tubes' do
+      @beanstalk.put 'cow'
+      @beanstalk.should have_tube_size_of(1).for('default')
+      @beanstalk.reset!
+      @beanstalk.should have_tube_size_of(0).for('default')
+    end
+
+    it 'should still be watching' do
+      @beanstalk.list_tubes_watched.values.flatten.should == ['default']
+      @beanstalk.watch 'foo'
+      @beanstalk.list_tubes_watched.values.flatten.should == ['default', 'foo']
+      @beanstalk.clear!
+      @beanstalk.list_tubes_watched.values.flatten.should == ['default', 'foo']
+    end
+  end
+
   describe 'beanstalk workflow' do
     it 'can reserve an empty tube' do
       expect {
